@@ -31,65 +31,7 @@ NEEDS TO BE INSTALLED ON SCRATCH -> to much space needed!
     module purge
     module load miniconda
     eval "$(conda shell.bash hook)"
-
-
-### Use Conda to install remaining dependencies
-    conda create -n btk_env -c conda-forge -y python=3.6 docopt psutil pyyaml ujson tqdm nodejs=10 yq;
-    conda activate btk_env;
-    conda install -c bioconda -y pysam seqtk;
-    conda install -c conda-forge -y geckodriver selenium pyvirtualdisplay;
-    pip install fastjsonschema;
-
-
-### then fetch Bloobtool Kit in home/bin
-    mkdir -p ~/blobtoolkit;
-    cd ~/blobtoolkit;
-    git clone https://github.com/blobtoolkit/blobtools2;
-    git clone https://github.com/blobtoolkit/viewer;
-    git clone https://github.com/blobtoolkit/specification;
-    git clone https://github.com/blobtoolkit/insdc-pipeline;
-
-### install viewer packages
-    cd viewer;
-    npm install; --> läuft nicht!
-    cd ..;
-
-   Solution: nach npm install
-   in /blobtoolkit/viewer
-    npm audit fix
-   in /blobtoolkit/blobtools2
-    pip install -r requirements.txt --ignore-installed certifi
-
-Due to file quota moved conda env to scratch!
-### Install env in scratch
-   conda create -p /scratch/lpettric/btk_env -c conda-forge -y python=3.6 docopt psutil pyyaml ujson tqdm nodejs=10 yq;
-   conda activate /scratch/lpettric/btk_env;
-   conda install -c bioconda -y pysam seqtk;
-   conda install -c conda-forge -y geckodriver selenium pyvirtualdisplay;
-   pip install fastjsonschema;
-
-### Get list of env
-   conda info --envs
-
-### Remove env in home directory
-   conda remove --name btk_env --all
-
-### Viewer doesn't work! No localhost possible!
-	Tried different attempts to correct it, like...
-	... updating the nodes:
-	 conda activate /scratch/lpettric/btk_env
-	 mamba install -y -c conda-forge geckodriver selenium pyvirtualdisplay nodejs=14
- 	 pip install fastjsonschema; 
-
-	... setting a BTK_FILE_PATH
-	 BTK_FILE_PATH=/projects/ag-waldvogel/genome/CRIP/crip4.0/blobtools npm start
-
-	  npm run client # then the viewer instance you start with this command should be able to access the datasets
-
-	But did NOT work!
-
-
-
+--> Installation with conda did not work!!!
 
 ### Solution to Blobtools Viewer 
 
