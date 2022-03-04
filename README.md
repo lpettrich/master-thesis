@@ -11,6 +11,7 @@ Duration: 03.01.2022 - 03.07.2022
 seqkit stats [].fasta to get basic information about format type and length
   ### install seqkit
     i. Download latest tar.gz via firefox (link: https://github.com/shenwei356/seqkit/releases/tag/v2.1.0)
+    
     ii. Decompress with tar -zxvf *.tar.gz
 
 ### samtools faidx  
@@ -54,18 +55,18 @@ singularity exec -B /projects/ag-waldvogel/genomes/CRIP/crip4.0/:/schluppsi -B /
 
 #### Step 2 
 
-i) Open new terminal
+    i) Open new terminal
 
-ii) Login with information from "For remote access use ..." from the first step (username@remote_host = lpettric@cheops1.rrz.uni-koeln.de) 
+    ii) Login with information from "For remote access use ..." from the first step (username@remote_host = lpettric@cheops1.rrz.uni-koeln.de) 
 
-iii) Login with your password
+    iii) Login with your password
 
 
 #### Step 3 
 
- i) Copy link of "View dataset at .." from the first step
+    i) Copy link of "View dataset at .." from the first step
 
- ii) Paste it to your browser and load the webpage
+    ii) Paste it to your browser and load the webpage
 
  
 
@@ -329,9 +330,9 @@ INSTEAD INSTALLED shapeit (v.2)
 ## 5.1 iSMC (wrong package, instead eSMC)
 
 ### install iSMC
-    i. Download latest tar.gz via firefox (link: https://github.com/gvbarroso/iSMC/releases/tag/v0.0.23)
-    ii. Decompress with tar -zxvf *.tar.gz
-    iii. Download additionals file using 
+    i) Download latest tar.gz via firefox (link: https://github.com/gvbarroso/iSMC/releases/tag/v0.0.23)
+    ii) Decompress with tar -zxvf *.tar.gz
+    iii) Download additionals file using 
          git clone https://github.com/gvbarroso/iSMC
 
 
