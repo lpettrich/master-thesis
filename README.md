@@ -1,5 +1,7 @@
 This is the Logfile for the Master thesis of Laura Pettrich 
-Topic: Population History				      
+
+Topic: Population History	
+
 Duration: 03.01.2022 - 03.07.2022			       
 
 
