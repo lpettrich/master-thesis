@@ -321,7 +321,8 @@ In the above example, the ‘cd’ command is used to ‘change directory’ to 
 
 Core dumped!!!! calling shapeit4 does not work!!!
 INSTEAD INSTALLED shapeit (v.2)
-   conda install -c dranew shapeit 
+
+    conda install -c dranew shapeit 
 
 
 
@@ -331,7 +332,9 @@ INSTEAD INSTALLED shapeit (v.2)
 
 ### install iSMC
 i) Download latest tar.gz via firefox (link: https://github.com/gvbarroso/iSMC/releases/tag/v0.0.23)
+
 ii) Decompress with tar -zxvf *.tar.gz
+
 iii) Download additionals file using 
          git clone https://github.com/gvbarroso/iSMC
 
@@ -344,7 +347,9 @@ iii) Download additionals file using
      ~/dlang/install.sh update
 
 Run `source ~/dlang/dmd-2.099.0/activate` in your shell to use dmd-2.099.0.
+
 This will setup PATH, LIBRARY_PATH, LD_LIBRARY_PATH, DMD, DC, and PS1.
+
 Run `deactivate` later on to restore your environment.
 
 #### Download latest GSL from GNU mirror (https://www.gnu.org/software/gsl/#downloading)
@@ -404,6 +409,7 @@ b) Index
 ### 5.2.3 Create mappability mask per chromosome using SNPable
 
 a) Extract overlapping 145mers subsequences as artificial reads from Chr1
+
 I have the same data as Ann-Marie so I choose the same length
 
      /home/lpettric/bin/seqbility-20091110/splitfa Chr1_Chironomus_riparius_genome_010921.fasta 145 | split -l 20000000
@@ -450,12 +456,18 @@ length: 145bp and stringency: 0.5
 
 ### 5.2.4 Phase reads
 OPTIONAL: Indel realingment (GATK3 not on GATK4)
+
 You must split the dataset by chromosomes prior to phasing
+
 a) Variant calling (you could also use freebayes and filter with vcftool but I will use script from msmc-tools (uses samtools pileup and bcftools call)
+
 b) Create diallelic reference panel and find recombination rate
+
 c) Phasing with SHAPEIT
+
 e) Correct for missed genotypes
- ...
+
+...
 
 
 ### 5.2.5 Create input-files (multihetsep)
