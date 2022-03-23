@@ -551,21 +551,27 @@ you get csi index
      bcftools index merged_biallelic_Chr1.vcf.gz
 
 #### c) Phasing with SHAPEIT --> find recombination rate (https://academic.oup.com/g3journal/article/10/4/1151/6026161#235660423: ranges between 0.04 and 0.07 on Chr3 less, use 0.04 since it is on Chr3 less --> no parameter with recombination rate in shapeit4)
+
 Shapeit4.2 was modified by Peter Heger to remove AVX2 dependency
 
 start shapeit main run (need to load boost and samtools)
+
      /home/lpettric/bin/shapeit4/bin/shapeit4.2 -I merged_biallelic_Chr1.vcf.gz -O ./phased/merged_biallelic_Chr1_phased.vcf.gz --sequencing --region Chr1 --log  /phased/shapeit_Chr1.log
 
 after phasing all individuals together, seperate them again
+
       while read f; do bcftools view -s $f -O z -o $f"_Chr1_phased.vcf.gz" merged_biallelic_Chr1_phased.vcf.gz ; done < ../../../bam-files/list-crip
 
 
 vcf.gz files indexed
+
       for f in *.vcf.gz; do bcftools index $f; done
 
 #### e) Correct for missed genotypes
 These files now contain the pashed alleles for each individual. However, the pre-phased files might contain more information that should not be lost.
+
 Merging phased and unphased vcfs, keeping all unphased sites from the original vcf, but replacing the phased ones
+
 Use --force-samples because phased and unphase have same headers
 
       while read f; do bcftools merge --force-samples ../$f"_Chr1.vcf.gz" $f"_Chr1_phased.vcf.gz" | awk '
