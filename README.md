@@ -4,7 +4,7 @@ Topic: Population History
 
 Duration: 03.01.2022 - 03.07.2022			       
 
-
+# ***Chironomus riparius***
 # 1. First look at Crip4.0 Genome
 
 
@@ -453,25 +453,139 @@ e) Generate the final mask
 length: 145bp and stringency: 0.5
 
 
+final-masks can be found in a seperate directory
+
+f) convert final-masks to .bed using makeMappabilitMask.py
+
+change paths of input and output in script
+
 
 ### 5.2.4 Phase reads
-OPTIONAL: Indel realingment (GATK3 not on GATK4)
+
+OPTIONAL: Indel realingment (GATK3 not on GATK4 (with freebayes not neccessary))
 
 You must split the dataset by chromosomes prior to phasing
 
-a) Variant calling (you could also use freebayes and filter with vcftool but I will use script from msmc-tools (uses samtools pileup and bcftools call)
+#### a) Variant calling (you could also use freebayes and filter with vcftool but I will use script from msmc-tools (uses samtools pileup and bcftools call)
 
-b) Create diallelic reference panel and find recombination rate
+a.1) Try freebayes
 
-c) Phasing with SHAPEIT
+a.2) Try script from msmc-tools (bamCaller.py)
 
-e) Correct for missed genotypes
+Get coverage statistics per chromosome
 
-...
+     while read f; do samtools depth -r Chr1 $f".bwamem.sort.q30.rmd.bam" | awk '{sum += $3} END {print sum / NR}' > $f".Chr1.cov" ; done < list-crip
+     # repeat for every chromosome
 
+Run bamCaller.py
+
+     samtools mpileup -q 30 -Q 20 -C 50 -u -r <chr> -f <ref.fa> <bam> | bcftools call -c -V indels | /home/lpettric/bin/msmc-tools/bamCaller.py <mean_cov> <out_mask.bed.gz> | gzip -c > <out.vcf.gz>
+    
+samtools:
+
+    # q = Minimum mapping quality for an alignment to be used
+    
+    # Q = Minimum base quality for a base to be considered.
+    
+    # C = Coefficient for downgrading mapping quality for reads containing excessive mismatches. Given a read with a phred-scaled probability q of being generated from the mapped position, the new mapping quality is about sqrt((INT-q)/INT)*INT. A zero value disables this functionality; if enabled, the recommended value for BWA is 50. 
+    
+    # u = uncompressed
+    
+    # r = Only generate pileup in region. Requires the BAM files to be indexed. If used in conjunction with -l then considers the intersection of the two requests.
+    
+    # f = fasta-ref
+    
+ bcftools:
+ 
+    # c = consensus-caller
+ 
+    # V = skip-variants snps|indels
+
+Get summary list of coverage per chromosome per bam
+
+    awk '{print $0 "\t" FILENAME}' *.Chr1.cov > Chr1.summary
+
+
+Final command: Instead of samtools use bcftools because mpielup migrated to it
+
+    module purge
+    module load samtools/1.13
+    module load python/3.4.3
+
+    cd /projects/ag-waldvogel/pophistory/CRIP/bam-files
+
+    # Chr1
+    while read -r x y; do bcftools mpileup -q 30 -Q 20 -C 50 -r Chr1 -f /projects/ag-waldvogel/genomes/CRIP/crip4.0/Chironomus_riparius_genome_010921.fasta $y".bwamem.sort.q30.rmd.bam" | bcftools call -c -V indels | /home/lpettric/bin/msmc-tools/bamCaller.py $x $y"_mask.bed.gz" | gzip -c > $y".vcf.gz" ;done < ./mean-coverage-chromosome/Chr1.summary
+
+--> changed script, so that it is directly bgzipped
+
+    # Chr2
+    while read -r x y; do bcftools mpileup -q 30 -Q 20 -C 50 -r Chr2 -f /projects/ag-waldvogel/genomes/CRIP/crip4.0/Chironomus_riparius_genome_010921.fasta $y".bwamem.sort.q30.rmd.bam" | bcftools call -c -V indels | /home/lpettric/bin/msmc-tools/bamCaller.py $x $y"_Chr2_mask.bed.gz" | bgzip -c > $y"_Chr2.vcf.gz" ;done < ./mean-coverage-chromosome/Chr2.summary
+
+
+merge vcf.files and zip and index them (because no reference panel)
+
+     bgzip *.vcf --> bcftools only index if they are bgzipped
+normal gzip worng! need to change to bgzip
+command for already existing files of Chr1: 
+       for f in *vcf*; do zcat $f | bgzip -c > $f".bgz" ; done
+check type of vcf with:
+      htsfile file.vcf.gz
+index
+          for f in *vcf.gz; do bcftools index $f; done
+
+you get csi index
+ 
+       bcftools merge --print-header *.vcf.gz # to get header info to see if there are recurring headers
+      bcftools merge -O z -o merged_Chr1.vcf.gz  *.vcf.gz       
+
+#### b) No reference panel, that's why we merged the vcf, now we filter to only have monoallelic and biallelic SNPs  
+
+     bcftools view -M 2 -O z -o merged_biallelic_Chr1.vcf.gz merged_Chr1.vcf.gz 
+     bcftools index merged_biallelic_Chr1.vcf.gz
+
+#### c) Phasing with SHAPEIT --> find recombination rate (https://academic.oup.com/g3journal/article/10/4/1151/6026161#235660423: ranges between 0.04 and 0.07 on Chr3 less, use 0.04 since it is on Chr3 less --> no parameter with recombination rate in shapeit4)
+Shapeit4.2 was modified by Peter Heger to remove AVX2 dependency
+
+start shapeit main run (need to load boost and samtools)
+     /home/lpettric/bin/shapeit4/bin/shapeit4.2 -I merged_biallelic_Chr1.vcf.gz -O ./phased/merged_biallelic_Chr1_phased.vcf.gz --sequencing --region Chr1 --log  /phased/shapeit_Chr1.log
+
+after phasing all individuals together, seperate them again
+      while read f; do bcftools view -s $f -O z -o $f"_Chr1_phased.vcf.gz" merged_biallelic_Chr1_phased.vcf.gz ; done < ../../../bam-files/list-crip
+
+
+vcf.gz files indexed
+      for f in *.vcf.gz; do bcftools index $f; done
+
+#### e) Correct for missed genotypes
+These files now contain the pashed alleles for each individual. However, the pre-phased files might contain more information that should not be lost.
+Merging phased and unphased vcfs, keeping all unphased sites from the original vcf, but replacing the phased ones
+Use --force-samples because phased and unphase have same headers
+
+      while read f; do bcftools merge --force-samples ../$f"_Chr1.vcf.gz" $f"_Chr1_phased.vcf.gz" | awk '
+    	  BEGIN {OFS="\t"}
+ 	     $0 ~ /^##/ {print}
+	     $0 ~ /^#CHROM/ {print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10}
+	     $0 !~ /^#/ {
+ 	     if(substr($11, 1, 3) != "./.")
+  	     $10 = $11
+ 	     print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+      }' | bcftools view -O z > $f"_Chr1_phased_merged.vcf.gz" ; done < ../../../bam-files/list-crip
 
 ### 5.2.5 Create input-files (multihetsep)
-...
+
+	while read a b c d; do /home/lpettric/bin/msmc-tools//generate_multihetsep.py --mask=../$a"_Chr1_mask.bed.gz" \
+                          --mask=..$b"_Chr1_mask.bed.gz" \
+                          --mask=..$c"_Chr1_mask.bed.gz" \
+                          --mask=..$d"_Chr1_mask.bed.gz" \
+                          --mask=/projects/ag-waldvogel/pophistory/CRIP/masking/final-mask/mask_Chr1_145_50.bed.gz \
+                          $a"_Chr1_phased_merged.vcf.gz" $b"_Chr1_phased_merged.vcf.gz" \
+                          $c"_Chr1_phased_merged.vcf.gz" $d"_Chr1_phased_merged.vcf.gz" > "multihetsep_"$a"_"$b"_"$c"_"$d"_Chr1.txt"; done < ../../../msmc2/list-populations
+
+
+
+
+
 
 ## 5.3 eSMC 
 
@@ -498,4 +612,8 @@ e) Correct for missed genotypes
 	path="/home/lpettric/bin/eSMC2/eSMC2_1.1.5.tar.gz" # Path to the dowloaded eSMC package
 	devtools::install_local(path)
 
-   
+
+# ***Panagrolaimus kolymaensis***
+# 1. First look at Pkol Genome
+
+# 2. Pre-processing
