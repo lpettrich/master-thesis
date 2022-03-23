@@ -526,17 +526,23 @@ Final command: Instead of samtools use bcftools because mpielup migrated to it
 merge vcf.files and zip and index them (because no reference panel)
 
      bgzip *.vcf --> bcftools only index if they are bgzipped
+     
 normal gzip worng! need to change to bgzip
 command for already existing files of Chr1: 
+
        for f in *vcf*; do zcat $f | bgzip -c > $f".bgz" ; done
+       
 check type of vcf with:
+
       htsfile file.vcf.gz
+      
 index
+
           for f in *vcf.gz; do bcftools index $f; done
 
 you get csi index
  
-       bcftools merge --print-header *.vcf.gz # to get header info to see if there are recurring headers
+      bcftools merge --print-header *.vcf.gz # to get header info to see if there are recurring headers
       bcftools merge -O z -o merged_Chr1.vcf.gz  *.vcf.gz       
 
 #### b) No reference panel, that's why we merged the vcf, now we filter to only have monoallelic and biallelic SNPs  
