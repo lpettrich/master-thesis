@@ -468,7 +468,7 @@ You must split the dataset by chromosomes prior to phasing
 
 #### a) Variant calling (you could also use freebayes and filter with vcftool but I will use script from msmc-tools (uses samtools pileup and bcftools call)
 
-a.1) Try freebayes
+a.1) Try freebayes -> not done!
 
 a.2) Try script from msmc-tools (bamCaller.py)
 
@@ -594,10 +594,51 @@ Use --force-samples because phased and unphase have same headers
                           $a"_Chr1_phased_merged.vcf.gz" $b"_Chr1_phased_merged.vcf.gz" \
                           $c"_Chr1_phased_merged.vcf.gz" $d"_Chr1_phased_merged.vcf.gz" > "multihetsep_"$a"_"$b"_"$c"_"$d"_Chr1.txt"; done < ../../../msmc2/list-populations
 
+#### 5.2.6 First runs of msmc2 = one population only
+USE MUTATION RATE FROM ANN-MARIE'S PAPER '21                  
+4.27x10^-9 #from Waldvogel & Pfenninger 2021; mutation rate   
+not for msmc run but to get real time data                    
+
+##### Wiederholung mit anderem -p (run6)
+On Cheops1
+	module purge
+
+	cd /projects/ag-waldvogel/pophistory/CRIP/msmc2/
+
+	## MG
+	/home/lpettric/bin/msmc2/build/release/msmc2 -p 1*3+1*2+22*1+1*2+1*3 -t 5 -I 0,1,2,3,4,5,6,7 -o MF_Chr1-4_msmc_output ./multihetsep-Chr1/multihetsep_MF1_MF2_MF3_MF4_Chr1.txt ./multihetsep-Chr2/multihetsep_MF1_MF2_MF3_MF4_Chr2.txt ./multihetsep-Chr3/multihetsep_MF1_MF2_MF3_MF4_Chr3.txt ./multihetsep-Chr4/multihetsep_MF1_MF2_MF3_MF4_Chr4.txt &
+	wait
+	## MG
+	/home/lpettric/bin/msmc2/build/release/msmc2 -p 1*3+1*2+22*1+1*2+1*3 -t 5 -I 0,1,2,3,4,5,6,7 -o MG_Chr1-4_msmc_output ./multihetsep-Chr1/multihetsep_MG2_MG3_MG4_MG5_Chr1.txt ./multihetsep-Chr2/multihetsep_MG2_MG3_MG4_MG5_Chr2.txt ./multihetsep-Chr3/multihetsep_MG2_MG3_MG4_MG5_Chr3.txt ./multihetsep-Chr4/multihetsep_MG2_MG3_MG4_MG5_Chr4.txt &
+	wait
+	## NMF
+	/home/lpettric/bin/msmc2/build/release/msmc2 -p 1*3+1*2+22*1+1*2+1*3 -t 5 -I 0,1,2,3,4,5,6,7 -o NMF_Chr1-4_msmc_output ./multihetsep-Chr1/multihetsep_NMF1_NMF2_NMF3_NMF4_Chr1.txt ./multihetsep-Chr2/multihetsep_NMF1_NMF2_NMF3_NMF4_Chr2.txt ./multihetsep-Chr3/multihetsep_NMF1_NMF2_NMF3_NMF4_Chr3.txt ./multihetsep-Chr4/multihetsep_NMF1_NMF2_NMF3_NMF4_Chr4.txt &
+	wait
+	## SI
+	/home/lpettric/bin/msmc2/build/release/msmc2 -p 1*3+1*2+22*1+1*2+1*3 -t 5 -I 0,1,2,3,4,5,6,7 -o SI_Chr1-4_msmc_output ./multihetsep-Chr1/multihetsep_SI1_SI2_SI3_SI4_Chr1.txt ./multihetsep-Chr2/multihetsep_SI1_SI2_SI3_SI4_Chr2.txt ./multihetsep-Chr3/multihetsep_SI1_SI2_SI3_SI4_Chr3.txt ./multihetsep-Chr4/multihetsep_SI1_SI2_SI3_SI4_Chr4.txt &
+	wait
+	## SS
+	/home/lpettric/bin/msmc2/build/release/msmc2 -p 1*3+1*2+22*1+1*2+1*3 -t 5 -I 0,1,2,3,4,5,6,7 -o SS_Chr1-4_msmc_output ./multihetsep-Chr1/multihetsep_SS1_SS2_SS3_SS4_Chr1.txt ./multihetsep-Chr2/multihetsep_SS1_SS2_SS3_SS4_Chr2.txt ./multihetsep-Chr3/multihetsep_SS1_SS2_SS3_SS4_Chr3.txt ./multihetsep-Chr4/multihetsep_SS1_SS2_SS3_SS4_Chr4.txt
+
+#### 5.2.7 Cross-coalesence for 16 haplotypes (2 populations á 4 individuals)
+Need to perform 3 separate run + combineCrossCoal.py
+1.    msmc2 -I 0,1,2,3,4,5,6,7 -o within1_msmc <input_chr1> <input_chr2> ...
+2.    bmsmc2 -I 8,9,10,11,12,13,14,15 -o within2_msmc <input_chr1> <input_chr2> ...
+3.    msmc2 -I 0-8,0-9,0-10,0-11,0-12,0-13,0-14,0-15, \
+		1-8,1-9,1-10,1-11,1-12,1-13,1-14,1-15, \
+		2-8,2-9,2-10,2-11,2-12,2-13,2-14,2-15, \
+		3-8,3-9,3-10,3-11,3-12,3-13,3-14,3-15, \
+		4-8,4-9,4-10,4-11,4-12,4-13,4-14,4-15, \
+		5-8,5-9,5-10,5-11,5-12,5-13,5-14,5-15, \
+		6-8,6-9,6-10,6-11,6-12,6-13,6-14,6-15, \
+		7-8,7-9,7-10,7-11,7-12,7-13,7-14,7-15 -o across_msmc <input_chr1> <input_chr2> ...
+4.    combineCrossCoal.py across_msmc.final.txt within1_msmc.final.txt within2_msmc.final.txt > combined12_msmc.final.txt
+
+#### 5.2.8 Account for uncertainities in coalescence
 
 
 
-
+##### Plots of MSMC2 runs were created in R -> scripts:
 
 ## 5.3 eSMC 
 
