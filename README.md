@@ -655,9 +655,9 @@ Need to perform 3 separate run + combineCrossCoal.py
     conda install -c r r-devtools
 
 ### open R in eSMC conda env (eSMC_env)
-   install.packages("rlang")
-   install.packages("devtools")
-   sessionInfo()
+    install.packages("rlang")
+    install.packages("devtools")
+    sessionInfo()
 
 
 ### open in R with eSMC conda env (eSMC_env)
