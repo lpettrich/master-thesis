@@ -468,9 +468,7 @@ You must split the dataset by chromosomes prior to phasing
 
 #### a) Variant calling (you could also use freebayes and filter with vcftool but I will use script from msmc-tools (uses samtools pileup and bcftools call)
 
-a.1) Try freebayes -> not done!
-
-a.2) Try script from msmc-tools (bamCaller.py)
+a.1) Try script from msmc-tools (bamCaller.py)
 
 Get coverage statistics per chromosome
 
@@ -633,6 +631,76 @@ Need to perform 3 separate run + combineCrossCoal.py
 		6-8,6-9,6-10,6-11,6-12,6-13,6-14,6-15, \
 		7-8,7-9,7-10,7-11,7-12,7-13,7-14,7-15 -o across_msmc <input_chr1> <input_chr2> ...
 4.    combineCrossCoal.py across_msmc.final.txt within1_msmc.final.txt within2_msmc.final.txt > combined12_msmc.final.txt
+
+##### 1. Create multihetsep with 16 haplotypes
+
+	#Cheops0
+	module purge
+	module load python/3.4.3
+
+	cd /projects/ag-waldvogel/pophistory/CRIP/phasing/Chr1/phased
+
+	# 4 inidividuals per population
+	while read a b c d e f g h; do /home/lpettric/bin/msmc-tools//generate_multihetsep.py --mask=../$a"_Chr1_mask.bed.gz" \
+                          --mask=../$b"_Chr1_mask.bed.gz" \
+                          --mask=../$c"_Chr1_mask.bed.gz" \
+                          --mask=../$d"_Chr1_mask.bed.gz" \
+                          --mask=../$e"_Chr1_mask.bed.gz" \
+                          --mask=../$f"_Chr1_mask.bed.gz" \
+                          --mask=../$g"_Chr1_mask.bed.gz" \
+                          --mask=../$h"_Chr1_mask.bed.gz" \
+                          --mask=/projects/ag-waldvogel/pophistory/CRIP/masking/final-mask/mask_Chr1_145_50.bed.gz \
+                          $a"_Chr1_phased_merged.vcf.gz" $b"_Chr1_phased_merged.vcf.gz" \
+                          $c"_Chr1_phased_merged.vcf.gz" \
+                          $d"_Chr1_phased_merged.vcf.gz" $e"_Chr1_phased_merged.vcf.gz" $f"_Chr1_phased_merged.vcf.gz" \
+                          $g"_Chr1_phased_merged.vcf.gz" \
+                          $h"_Chr1_phased_merged.vcf.gz"> /projects/ag-waldvogel/pophistory/CRIP/msmc2/multihetsep-Chr1/"multihetsep_"$a"-"$h"_joined_Chr1.txt"; done < /projects/ag-waldvogel/pophistory/CRIP/msmc2/list-populations-cc
+
+For list-populations-cc see below
+
+##### 2. Create within_msmc and across_msmc
+
+list-populations-cc (original without numbers):
+1.	MF1	MF2	MF3	MF4	MG2	MG3	MG4	MG5
+2.	MF1	MF2	MF3	MF4	NMF1	NMF2	NMF3	NMF4
+3.	MF1	MF2	MF3	MF4	SI1	SI2	SI3	SI4
+4.	MF1	MF2	MF3	MF4	SS1	SS2	SS3	SS4
+5.	MG2	MG3	MG4	MG5	NMF1	NMF2	NMF3	NMF4
+6.	MG2	MG3	MG4	MG5	SI1	SI2	SI3	SI4
+7.	MG2	MG3	MG4	MG5	SS1	SS2	SS3	SS4
+8.	NMF1	NMF2	NMF3	NMF4	SI1	SI2	SI3	SI4
+9.	NMF1	NMF2	NMF3	NMF4	SS1	SS2	SS3	SS4
+10.	SI1	SI2	SI3	SI4	SS1	SS2	SS3	SS4
+
+##### Example with MF1-MG5
+
+	# Cheops1
+	module purge
+
+	cd /projects/ag-waldvogel/pophistory/CRIP/msmc2/cross-coalescene
+
+	# MF (within1) - MG (within2)
+	/home/lpettric/bin/msmc2/build/release/msmc2 -p 1*3+1*2+22*1+1*2+1*3 -t 5 -I 0,1,2,3,4,5,6,7 -o ./run1/within1_msmc2_MF1-MG5 ../multihetsep-Chr1/multihetsep_MF1-MG5_joined_Chr1.txt ../multihetsep-Chr2/multihetsep_MF1-MG5_joined_Chr2.txt ../multihetsep-Chr3/multihetsep_MF1-MG5_joined_Chr3.txt ../multihetsep-Chr4/multihetsep_MF1-MG5_joined_Chr4.txt &
+	wait
+	/home/lpettric/bin/msmc2/build/release/msmc2 -p 1*3+1*2+22*1+1*2+1*3 -t 5 -I 8,9,10,11,12,13,14,15 -o ./run1/within2_msmc2_MF1-MG5 ../multihetsep-Chr1/multihetsep_MF1-MG5_joined_Chr1.txt ../multihetsep-Chr2/multihetsep_MF1-MG5_joined_Chr2.txt ../multihetsep-Chr3/multihetsep_MF1-MG5_joined_Chr3.txt ../multihetsep-Chr4/multihetsep_MF1-MG5_joined_Chr4.txt &
+	wait
+	/home/lpettric/bin/msmc2/build/release/msmc2 -p 1*3+1*2+22*1+1*2+1*3 -t 5 -I 0-8,0-9,0-10,0-11,0-12,0-13,0-14,0-15,1-8,1-9,1-10,1-11,1-12,1-13,1-14,1-15,2-8,2-9,2-10,2-11,2-12,2-13,2-14,2-15,3-8,3-9,3-10,3-11,3-12,3-13,3-14,3-15,4-8,4-9,4-10,4-11,4-12,4-13,4-14,4-15,5-8,5-9,5-10,5-11,5-12,5-13,5-14,5-15,6-8,6-9,6-10,6-11,6-12,6-13,6-14,6-15,7-8,7-9,7-10,7-11,7-12,7-13,7-14,7-15 -o ./run1/across_msmc2_MF1-MG5 ../multihetsep-Chr1/multihetsep_MF1-MG5_joined_Chr1.txt ../multihetsep-Chr2/multihetsep_MF1-MG5_joined_Chr2.txt ../multihetsep-Chr3/multihetsep_MF1-MG5_joined_Chr3.txt ../multihetsep-Chr4/multihetsep_MF1-MG5_joined_Chr4.txt
+
+
+##### 3. Create combined cross-coalescence
+
+	#Cheops0
+	module purge
+	module load python/3.4.3 
+
+	cd /projects/ag-waldvogel/pophistory/CRIP/msmc2/cross-coalescene/run1
+
+	# MF-MG
+	/home/lpettric/bin/msmc-tools/combineCrossCoal.py across_msmc2_MF1-MG5.final.txt within1_msmc2_MF1-MG5.final.txt within2_msmc2_MF1-MG5.final.txt > combinedMF1-MG5_msmc2.final.txt
+
+
+=> All results in Excel, mean values per population calculated and plotted in R
+
 
 #### 5.2.8 Account for uncertainities in coalescence
 
