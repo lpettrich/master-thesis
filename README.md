@@ -735,6 +735,6 @@ list-populations-cc (original without numbers):
 
 
 # ***Panagrolaimus kolymaensis***
-# 1. First look at Pkol Genome
+# 1. First look at PKOL Genome
 
 # 2. Pre-processing
