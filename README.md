@@ -699,14 +699,14 @@ list-populations-cc (original without numbers):
 	/home/lpettric/bin/msmc-tools/combineCrossCoal.py across_msmc2_MF1-MG5.final.txt within1_msmc2_MF1-MG5.final.txt within2_msmc2_MF1-MG5.final.txt > combinedMF1-MG5_msmc2.final.txt
 
 
-=> All results in Excel, mean values per population calculated and plotted in R
+##### => All results in Excel, mean values per population calculated and plotted in R
 
 
 #### 5.2.8 Account for uncertainities in coalescence
 
 
 
-##### Plots of MSMC2 runs were created in R -> scripts:
+
 
 ## 5.3 eSMC 
 
