@@ -733,6 +733,22 @@ list-populations-cc (original without numbers):
 	path="/home/lpettric/bin/eSMC2/eSMC2_1.1.5.tar.gz" # Path to the dowloaded eSMC package
 	devtools::install_local(path)
 
+### 5.3.1 Create input file
+eSMC2 analysis of CRIP
+Create multihetsep per individual and chromosome
+
+	#Cheops0
+	module purge
+	module load python/3.4.3
+
+	cd /projects/ag-waldvogel/pophistory/CRIP/phasing/
+
+
+	while read a b; do /home/lpettric/bin/msmc-tools/generate_multihetsep.py --mask=$b/$a"_"$b"_mask.bed.gz" \
+                          --mask=/projects/ag-waldvogel/pophistory/CRIP/masking/final-mask/"mask_"$b"_145_50.bed.gz" \
+                          $b/phased/$a"_"$b"_phased_merged.vcf.gz" > /projects/ag-waldvogel/pophistory/CRIP/esmc/multihetsep-files/"multihetsep_"$a"_"$b".txt"; done < /projects/ag-waldvogel/pophistory/CRIP/esmc/list-crip-chr
+                          
+                          
 
 # ***Panagrolaimus kolymaensis***
 # 1. First look at PKOL Genome
