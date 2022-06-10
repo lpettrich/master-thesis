@@ -1,6 +1,6 @@
 This is the Logfile for the Master's Thesis by Laura Pettrich 
 
-Topic: Population History	
+Topic: Genome-wide inference of population history in eukaryotes	
 
 Duration: 03.01.2022 - 03.07.2022			       
 
