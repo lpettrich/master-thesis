@@ -232,7 +232,7 @@ View blobplot
 
 # 2. WORKFLOW
 
-![](pictures/workflow.svg){width="700px"}
+![](pictures/workflow.svg)
 
 # 3 CRIP READS
 
