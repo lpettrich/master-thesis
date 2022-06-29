@@ -178,8 +178,8 @@ View blobplot
 
     blastn -db /scratch/lpettric/nt/nt \
            -query /scratch/lpettric/blobtools/JU765/propanagrolaimus_ju765.PRJEB32708.WBPS16.genomic.fa \
-          -outfmt "6 qseqid staxids bitscore std" \
-          -max_target_seqs 10 \
+           -outfmt "6 qseqid staxids bitscore std" \
+           -max_target_seqs 10 \
            -max_hsps 1 \
            -evalue 1e-25 \
            -num_threads 32 \
@@ -232,7 +232,7 @@ View blobplot
 
 # 2. WORKFLOW
 
-![](pictures2/workflow.svg){width="700px"}
+![](pictures/workflow.svg){width="700px"}
 
 # 3 CRIP READS
 
@@ -281,7 +281,7 @@ MultiQC
     while read f; do samtools view -b $f"_bwamem.sam" > $f".bam" ;done < list-crip
     cat list-crip | /home/lpettric/bin/parallel/bin/parallel -j 20 'samtools sort -@ 4 -o {}.bwamem.sort.bam {}.bam'
 
-list-crip" contains names of files without file-extension
+"list-crip" contains names of files without file-extension
 
 ## 3.4 Collect flagstat statistics
 
@@ -674,7 +674,7 @@ list-populations-cc (Original ohne Nummerierung):
 
 a)  Form mean value for estimates of every population
 
-b)  Convert lambda and left-time-boundary to real time data --\> CHECK!
+b)  Convert lambda and left-time-boundary to real time data 
 
          time <- ((data$left_time_boundary+data$right_time_boundary)/2)/mu*gen) # years ago
          time2 <- ((data$left_time_boundary+data$right_time_boundary)/2)/mu) # generations ago
@@ -686,56 +686,41 @@ b)  Convert lambda and left-time-boundary to real time data --\> CHECK!
          # use genertaion time of every population!!!
 
 
-         ## IN ANALYSIS USE GENERATION TIME OF EVERY POPULATION! ##
+         ## IN ANALYSIS USE GENERATION TIME OF EVERY POPULATION seperate! ##
 
-         Population  Abbreviation    Generations per year    
-         Hessen (G)  MG      7.85 
-         Metz (F)    NMF         7.7 
-         Lyon (F)    MF      9.07 
-         Piemont (I)     SI      10.57 
-         Andalucia (S)   SS      14.86 
-         mean                10.01
 
-c)  Remove values with unrealistic lambda (jump in value) =\> first 5
-    values --\> remove it constant across populations
+c)  Remove values with unrealistic lambda (jump in value) => first 5 values and last --> remove it constant across populations
 
-d)  Estimate mean haplotype length (MHL) and time to most recent
-    ancestor (tMRCA) per population
+d)  Estimate mean haplotype length (MHL) and time to most recent ancestor (tMRCA) per population
 
     #Cheops0 module purge module load samtools/1.13
 
     cd
     /projects/ag-waldvogel/pophistory/CRIP/msmc2/callable-sites/snp-call/
 
-    \# repeat variant calling without splitting data per chromosome,
-    indels should be included to get correct number of records
+    # repeat variant calling without splitting data per chromosome, indels should be included to get correct number of records
 
-    while read y; do bcftools mpileup -q 30 -Q 20 -C 50 -r
-    Chr1,Chr2,Chr3,Chr4 -f
-    /projects/ag-waldvogel/genomes/CRIP/crip4.0/Chironomus_riparius_genome_010921.fasta
-    /projects/ag-waldvogel/pophistory/CRIP/bam-files/\$y".bwamem.sort.q30.rmd.bam"
-    \| bcftools call -c \| bgzip -c \> \$y"\_allChr_inclIndel.vcf.gz"
-    ;done \< /projects/ag-waldvogel/pophistory/CRIP/bam-files/list-crip
-    & wait for f in \*\_allChr_inclIndel.vcf.gz; do bcftools index
-    $f; done & wait while read x; do bcftools view -M 2 -O z -o ./biallelic-snp/$x"\_allChr_inclIndel_biallelic.vcf.gz"
-    \$x"\_allChr_inclIndel.vcf.gz" ;done \<
-    /projects/ag-waldvogel/pophistory/CRIP/bam-files/list-crip & wait cd
-    /projects/ag-waldvogel/pophistory/CRIP/msmc2/callable-sites/snp-call/biallelic-snp/
-    & wait for f in \*\_allChr_inclIndel_biallelic.vcf.gz; do bcftools
-    index \$f; done & wait while read x; do bcftools stats
-    \$x"\_allChr_inclIndel_biallelic.vcf.gz" \>
-    \$x"\_allChr_inclIndel_biallelic.vcf.stats" ;done \<
-    /projects/ag-waldvogel/pophistory/CRIP/bam-files/list-crip
+    while read y; do bcftools mpileup -q 30 -Q 20 -C 50 -r Chr1,Chr2,Chr3,Chr4 -f /projects/ag-waldvogel/genomes/CRIP/crip4.0/Chironomus_riparius_genome_010921.fasta /projects/ag-waldvogel/pophistory/CRIP/bam-files/$y”.bwamem.sort.q30.rmd.bam” | bcftools call -c | bgzip -c > $y”_allChr_inclIndel.vcf.gz” ;done < /projects/ag-waldvogel/pophistory/CRIP/bam-files/list-crip & 
+    wait 
+    for f in *_allChr_inclIndel.vcf.gz; do bcftools index $f; done &
+    wait 
+    while read x; do bcftools view -M 2 -O z -o ./biallelic-snp/$x"_allChr_inclIndel_biallelic.vcf.gz" $x"_allChr_inclIndel.vcf.gz" ;done < /projects/ag-waldvogel/pophistory/CRIP/bam-files/list-crip & 
+    wait 
+    cd /projects/ag-waldvogel/pophistory/CRIP/msmc2/callable-sites/snp-call/biallelic-snp/ & 
+    wait 
+    for f in *_allChr_inclIndel_biallelic.vcf.gz; do bcftools index $f; done & 
+    wait 
+    while read x; do bcftools stats $x"_allChr_inclIndel_biallelic.vcf.gz" >  $x"_allChr_inclIndel_biallelic.vcf.stats" ;done < /projects/ag-waldvogel/pophistory/CRIP/bam-files/list-crip
 
 Biallelic filtering not neccessary =\> total number of SNPs -
 multiallelic SNPs = diallelic SNPs
 
-     total SNPs - multiallelic SNPs = diallelic SNPs
+      total SNPs - multiallelic SNPs = diallelic SNPs
       diallelic SNPs/number of records = Heterozygosity
       Mean Heterozygosity*100000 = X heterzygote position per 100000 bases
       100000 bases/X heterzygote position = 1 het per X bases (i.e. einfacher Dreisatz)
       X bases * SER = MHL
-     1/(2*r*MHL) = tMRCA
+      1/(2*r*MHL) = tMRCA
 
 # 7 CRIP eSMC2
 
@@ -1572,21 +1557,6 @@ run6 1\*10\^(-8)
         seqkit fx2tab --length --name --header-line  propanagrolaimus_ju765.PRJEB32708.WBPS16.genomic.fa > contig-length.txt
 
 ### Extract contigs longer 100,000 bp
-
-JU765_contig6007 length=907536 907536 JU765_contig10719 length=885754
-885754 JU765_contig12694 length=780218 780218 JU765_contig12612
-length=717063 717063 JU765_contig8578 length=676695 676695
-JU765_contig5138 length=418371 418371 JU765_contig13002 length=386891
-386891 JU765_contig10072 length=304894 304894 JU765_contig11384
-length=271737 271737 JU765_contig10136 length=263104 263104
-JU765_contig4081 length=247686 247686 JU765_contig12975 length=224296
-224296 JU765_contig11855 length=201900 201900 JU765_contig651
-length=196482 196482 JU765_contig13092 length=184262 184262
-JU765_contig12972 length=168328 168328 JU765_contig8871 length=150498
-150498 JU765_contig996 length=130227 130227 JU765_contig11918
-length=129611 129611 JU765_contig4911 length=117502 117502
-JU765_contig12636 length=114529 114529 JU765_contig8815 length=111332
-111332 JU765_contig561 length=103473 103473
 
 ### Extract contigs
 
