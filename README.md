@@ -234,7 +234,7 @@ View blobplot
 
 ![](pictures/workflow.svg)
 
-*General workflow of this study. The obtained raw reads were pre-processed, the separate steps are shown in the blue boxes. The variant calling followed, including filtering steps with either bamCaller.py and bcftools or freebayes and bcftools. After this an optional phasing followed, which was done for C. riparius, indicated in yellow. To generate the input-files for both SMC models, also called multihetsep-file, variant files which were either phased or not and additional mappability masks and coverage masks were necessary. The first were created using SNPable and second were created using bamCaller.py or bedtools. This workflow has been designed using resources from Flaticon.com.*
+*General workflow of this study. The obtained raw reads were pre-processed, variant calling followed, including filtering steps with either bamCaller.py and bcftools or freebayes and bcftools. An optional phasing followed. To generate the input-files for both SMC models variant files which were either phased or not and additional mappability masks and coverage masks were necessary. This workflow has been designed using resources from Flaticon.com.*
 
 # 3 CRIP READS
 
