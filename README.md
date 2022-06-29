@@ -14,7 +14,7 @@ Includes all important bioinformatic steps of my thesis.
 
 ### BUSCO
 
-    #Download BUSCO for offline usage
+    # Download BUSCO for offline usage
     wget -q -O diptera_odb10.gz "https://busco-data.ezlab.org/v4/data/lineages/diptera_odb10.2020-08-05.tar.gz" \
            && tar xf diptera_odb10.gz 
 
