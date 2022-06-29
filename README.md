@@ -724,7 +724,18 @@ multiallelic SNPs = diallelic SNPs
 
 # 7 CRIP eSMC2
 
-## 7.1 Recombination rate needed
+## 7.1
+
+### Create multihetsep per individual for each chromosome
+
+    cd /projects/ag-waldvogel/pophistory/CRIP/phasing/
+
+    while read a b; do /home/lpettric/bin/msmc-tools/generate_multihetsep.py --mask=$b/$a"_"$b"_mask.bed.gz" \
+                          --mask=/projects/ag-waldvogel/pophistory/CRIP/masking/final-mask/"mask_"$b"_145_50.bed.gz" \
+                          $b/phased/$a"_"$b"_phased_merged.vcf.gz" > /projects/ag-waldvogel/pophistory/CRIP/esmc/multihetsep-files/"multihetsep_"$a"_"$b".txt"; done < /projects/ag-waldvogel/pophistory/CRIP/esmc/list-crip-chr
+                          
+
+## 7.2 Recombination rate needed
 
 "I used the recombination rates from Schmidt, Hellmann, Waldvogel et al.
 (2020). Ann-Marie suplied me with unpublished rates for each population.
@@ -750,7 +761,7 @@ I follwed these steps to obtain r:
 
 4.  Result is r in cM/Mb"
 
-## 7.2 use recombination rate per population and don't define beta and sigma
+## 7.3 use recombination rate per population and don't define beta and sigma
 
 Population r in cM/Mb
 
@@ -834,7 +845,7 @@ R-script:
     Plot_esmc_results(resultMF1,mu,WP=F,LIST=F)
     dev.off()
 
-## 7.3 use mean rec. rate of CRIP
+## 7.4 use mean rec. rate of CRIP
 
     ###################
     # Source function #
@@ -904,7 +915,7 @@ R-script:
     Plot_esmc_results(resultMF1,mu,WP=F,LIST=F)
     dev.off()
 
-## 7.4 use rec. rate of Drosophila melanogaster
+## 7.5 use rec. rate of Drosophila melanogaster
 
     ###################
     # Source function #
@@ -975,7 +986,7 @@ R-script:
     Plot_esmc_results(resultMF1,mu,WP=F,LIST=F)
     dev.off()
 
-## 7.5 use recombination rate per population
+## 7.6 use recombination rate per population
 
     ###################
     # Source function #
