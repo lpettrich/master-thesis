@@ -9,8 +9,14 @@ Duration: 03.01.2022 - 03.07.2022
 Includes all important bioinformatic steps of my thesis.
 
 PKOL = *Panagrolaimus kolymaensis*
+
 JU765 = *Propanagrolaimus* sp. JU765
+
 CRIP = *Chironomus riparius*
+
+# Tools
+
+![](pictures/Tools.tif)
 
 # 1. GENOMES
 
