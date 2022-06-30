@@ -8,7 +8,7 @@ Includes all important bioinformatic steps of my thesis.
 
 # Tools
 
-![](pictures/Tools.tif)
+![](pictures/Tools.png)
 
 # 1. GENOMES
 
