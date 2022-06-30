@@ -8,7 +8,7 @@ Includes all important bioinformatic steps of my thesis.
 
 # Tools
 
-![](pictures/Tools.png)
+<img src="pictures/Tools.png" width="500">
 
 # 1. GENOMES
 
@@ -240,7 +240,7 @@ View blobplot
 
 # 2. WORKFLOW
 
-![](pictures/workflow.svg)
+<img src="pictures/workflow.svg" width="600">
 
 *General workflow of this study. The obtained raw reads were pre-processed, variant calling followed, including filtering steps with either bamCaller.py and bcftools or freebayes and bcftools. An optional phasing followed. To generate the input-files for both SMC models variant files which were either phased or not and additional mappability masks and coverage masks were necessary. This workflow has been designed using resources from Flaticon.com.*
 
